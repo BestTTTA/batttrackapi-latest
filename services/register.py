@@ -15,3 +15,4 @@ async def register(user_create: RegisterUser):
     user_data['password'] = hashed_password
     result = await collection.insert_one(user_data)
     return {"id": str(result.inserted_id), "username": user_create.username}
+    

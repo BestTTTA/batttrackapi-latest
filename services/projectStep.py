@@ -1,5 +1,5 @@
 from models.project import Project
-from models.project_step import ProjectStep
+from models.project_step import ProjectStep, BreakStart, BreakEnd
 from fastapi import APIRouter, HTTPException, Body, Path
 from modules.db import collection
 from bson import ObjectId
@@ -61,6 +61,7 @@ async def update_project_step_endtime(
     return {"message": "ProjectStep endtime updated successfully"}
 
 
+
 @router.put("/projects/{project_name}/update_project_step_status", status_code=200)
 async def update_project_step_status(
     project_name: str = Path(..., description="The ID of the project containing the project step to be updated"),
@@ -77,3 +78,60 @@ async def update_project_step_status(
         raise HTTPException(status_code=404, detail="Project not found or ProjectStep name not found")
 
     return {"message": "ProjectStep process_status updated successfully"}
+
+
+@router.put("/projects/{project_name}/steps/{name_step}/start_break", status_code=200)
+async def start_break(
+    project_name: str = Path(..., description="The ID of the project containing the project step to update"),
+    name_step: str = Path(..., description="The name of the project step to start break"),
+    break_start: BreakStart = Body(..., embed=True)
+):
+    result = await collection.update_one(
+        {"name_project": project_name, "process_step.name_step": name_step},
+        {"$set": {"process_step.$.start_break": break_start.start_break}}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Project or project step not found")
+
+    return {"message": "Break start time recorded successfully"}
+
+@router.put("/projects/{project_name}/steps/{name_step}/end_break", status_code=200)
+async def end_break(
+    project_name: str = Path(..., description="The ID of the project containing the project step to update"),
+    name_step: str = Path(..., description="The name of the project step to end break"),
+    break_end: BreakEnd = Body(..., embed=True)
+):
+    result = await collection.update_one(
+        {"name_project": project_name, "process_step.name_step": name_step},
+        {"$set": {"process_step.$.end_break": break_end.end_break}}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Project or project step not found")
+
+    return {"message": "Break end time recorded successfully"}
+
+@router.get("/projects/{project_name}/steps/{name_step}/get_break_duration", status_code=200)
+async def get_break_duration(
+    project_name: str = Path(..., description="The ID of the project containing the project step to query"),
+    name_step: str = Path(..., description="The name of the project step to get break duration for")
+):
+    project_step = await collection.find_one(
+        {"name_project": project_name, "process_step.name_step": name_step},
+        {"process_step.$": 1}
+    )
+    if not project_step:
+        raise HTTPException(status_code=404, detail="Project or project step not found")
+
+    start_break = project_step['process_step'][0]['start_break']
+    end_break = project_step['process_step'][0]['end_break']
+
+    if not start_break or not end_break:
+        raise HTTPException(status_code=400, detail="Break start or end time not recorded")
+
+    duration_seconds = (end_break - start_break).total_seconds()
+    return {
+        "message": "Break duration retrieved successfully",
+        "break_duration_minutes": duration_seconds / 60
+    }

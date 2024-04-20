@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException, Path
+from fastapi import APIRouter, Body, HTTPException, Path,status
 from modules.db import collection
 from models.employee import Employee
 from models.project import Project
@@ -59,3 +59,19 @@ async def update_project_step_endtime(
         )
 
     return {"message": "ProjectStep updated successfully"}
+
+
+@router.put("/employees/{emp_name}/update_name", status_code=status.HTTP_200_OK)
+async def update_employee_name(emp_name: str = Path(..., description="The name of the employee to update"), new_name: str = Body(..., embed=True, description="The new name of the employee")):
+
+    # Update the employee's name
+    result = await collection.find_one_and_update(
+        {"username": emp_name},
+        {"$set": {"username": new_name}},
+        return_document=ReturnDocument.AFTER
+    )
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    return 
