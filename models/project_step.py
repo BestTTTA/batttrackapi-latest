@@ -14,10 +14,12 @@ class ProjectStep(BaseModel):
     endtime: str = "-"
     process_status: bool = False
     employee: List[Employee] = []
+    start_break: str
+    end_break: str
 
 
 class BreakStart(BaseModel):
-    start_break: datetime
+    start_break: str
 
 class BreakEnd(BaseModel):
-    end_break: datetime
+    end_break: str
