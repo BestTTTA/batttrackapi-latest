@@ -5,6 +5,8 @@ FROM python:3.9-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+
+ENV MONGO_URL=mongodb://119.59.102.68:27020
 # Set the working directory
 WORKDIR /app
 

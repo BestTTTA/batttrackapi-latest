@@ -10,10 +10,15 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class Project(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    name_project: Optional[str] = None
+    # id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    serial_number: Optional[str] = None
     timestart: str = "-"
     endtime: str = "-"
     process_status: bool = False
     process_step: List[ProjectStep] = []
-    employee: List[Employee] = []
+    # employee: List[Employee] = []
+
+
+class ProjectHead(BaseModel):
+    name_project_head: Optional[str] = None
+    list_serial: List[Project] = []

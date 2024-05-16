@@ -1,11 +1,14 @@
 
-from typing import Optional
-from pydantic import BaseModel, Field
-from pydantic.functional_validators import BeforeValidator
-from typing_extensions import Annotated
+from typing import List
+from pydantic import BaseModel
 
-PyObjectId = Annotated[str, BeforeValidator(str)]
+
+class Break(BaseModel):
+    describe: str
+    start_break: str
+    end_break: str
 
 class Employee(BaseModel):
     name: str 
+    list_break: List[Break] = []
 

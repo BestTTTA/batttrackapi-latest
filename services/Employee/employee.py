@@ -1,23 +1,10 @@
-from fastapi import APIRouter, Body, HTTPException, Path,status
+from fastapi import APIRouter, Body, HTTPException, Path, status
 from modules.db import collection
 from models.employee import Employee
 from models.project import Project
 from pymongo.collection import ReturnDocument
-from entity.string_to_obj import str_to_objectid
 
 router = APIRouter(tags=["Employee"])
-
-# @router.post(
-#     "/create_user/",
-#     response_description="Add new Employee",
-#     response_model=Employee,
-#     status_code=status.HTTP_201_CREATED,
-#     response_model_by_alias=False,
-# )
-# async def create_user(emp: Employee = Body(...)):
-#     new_student = await collection.insert_one(emp.dict(by_alias=True, exclude={"id"}))
-#     create_user = await collection.find_one({"_id": new_student.inserted_id})
-#     return create_user
 
 
 @router.put("/projects/{project_name}/add_employee", response_model=Project)
@@ -37,15 +24,13 @@ async def add_employee(project_name: str, emp: Employee = Body(...)):
 @router.put("/projects/{project_name}/app_emp_project_step", status_code=200)
 async def update_project_step_endtime(
     project_name: str = Path(
-        ...,
-        description="The ID of the project containing the project step to be updated",
+        ...
     ),
     name_step: str = Body(
-        ..., embed=True, description="The name of the project step to update"
+        ..., embed=True
     ),
     employee: Employee = Body(...),
 ):
-    # Serialize the Employee object to a dictionary
     employee_dict = employee.dict()
 
     result = await collection.update_one(
@@ -62,16 +47,18 @@ async def update_project_step_endtime(
 
 
 @router.put("/employees/{emp_name}/update_name", status_code=status.HTTP_200_OK)
-async def update_employee_name(emp_name: str = Path(..., description="The name of the employee to update"), new_name: str = Body(..., embed=True, description="The new name of the employee")):
+async def update_employee_name(
+    emp_name: str = Path(...),
+    new_name: str = Body(..., embed=True),
+):
 
-    # Update the employee's name
     result = await collection.find_one_and_update(
         {"username": emp_name},
         {"$set": {"username": new_name}},
-        return_document=ReturnDocument.AFTER
+        return_document=ReturnDocument.AFTER,
     )
 
     if not result:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    return 
+    return
