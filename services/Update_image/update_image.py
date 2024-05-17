@@ -7,10 +7,13 @@ router = APIRouter(tags=["Project => Upload Image"])
 
 
 minioClient = Minio(
-    "119.59.102.68:9000", access_key="9Ve1u4iU5FD9hzIK6eIZ", secret_key="havdRCufvaaKVPdIuQcGKSVLoIEGGYpp1E3APumG", secure=False
+    "119.59.102.68:9000",
+    access_key="9Ve1u4iU5FD9hzIK6eIZ",
+    secret_key="havdRCufvaaKVPdIuQcGKSVLoIEGGYpp1E3APumG",
+    secure=False,
 )
 
-BUCKET_NAME = "product"
+BUCKET_NAME = "batttrack"
 
 if not minioClient.bucket_exists(BUCKET_NAME):
     minioClient.make_bucket(BUCKET_NAME)
@@ -23,9 +26,9 @@ else:
                 "Effect": "Allow",
                 "Principal": {"AWS": "*"},
                 "Action": "s3:GetObject",
-                "Resource": f"arn:aws:s3:::{BUCKET_NAME}/*"
+                "Resource": f"arn:aws:s3:::{BUCKET_NAME}/*",
             }
-        ]
+        ],
     }
     policy_json = json.dumps(policy)
 
@@ -33,8 +36,10 @@ else:
     minioClient.set_bucket_policy(BUCKET_NAME, policy_json)
 
 
-@router.post('/upload/')
+@router.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
     file_size = os.fstat(file.file.fileno()).st_size
-    ret = minioClient.put_object('product', file.filename, file.file, file_size)
-    return {'image_url': ret._object_name}
+    ret = minioClient.put_object("batttrack", file.filename, file.file, file_size)
+    return {
+        "image_url": "http://119.59.102.68:9000/batttrack/" + ret._object_name
+    }

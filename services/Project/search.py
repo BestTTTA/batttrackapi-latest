@@ -55,7 +55,7 @@ async def get_step_details(name_project_head: str, serial_number: str, name_step
         raise HTTPException(status_code=404, detail="Project not found")
     
     
-@router.get("/search_by_employee/{employee_name}")
+@router.get("/search_by_employee_work_not_done/{employee_name}")
 async def get_projects_by_employee_status(employee_name: str):
     # This query assumes the structure of your documents and the logic needs to be confirmed against actual data.
     # It searches for projects where any serial or step has a false status and includes the specified employee.
@@ -65,6 +65,35 @@ async def get_projects_by_employee_status(employee_name: str):
             {"list_serial.process_step": {
                 "$elemMatch": {
                     "process_status": False, 
+                    "employee": {
+                        "$elemMatch": {
+                            "name": employee_name
+                        }
+                    }
+                }
+            }}
+        ]
+    }
+    projects = await collection.find(query).to_list(length=None)
+
+    if projects:
+        # Convert MongoDB documents to JSON and then back to dict for response
+        projects_json = json.loads(json_util.dumps(projects))
+        return projects_json
+    else:
+        raise HTTPException(status_code=404, detail="No projects found matching the criteria")
+    
+    
+@router.get("/search_by_employee_work_done/{employee_name}")
+async def get_projects_by_employee_status(employee_name: str):
+    # This query assumes the structure of your documents and the logic needs to be confirmed against actual data.
+    # It searches for projects where any serial or step has a false status and includes the specified employee.
+    query = {
+        "$and": [
+            {"list_serial.process_status": True}, 
+            {"list_serial.process_step": {
+                "$elemMatch": {
+                    "process_status": True, 
                     "employee": {
                         "$elemMatch": {
                             "name": employee_name
