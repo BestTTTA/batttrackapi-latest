@@ -48,8 +48,3 @@ app.include_router(step_update_startbreak.router)
 app.include_router(step_update_status.router)
 app.include_router(step_update_timestart.router)
 
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)

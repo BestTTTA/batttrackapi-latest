@@ -6,14 +6,17 @@ import json
 router = APIRouter(tags=["Project => Upload Image"])
 
 
+BUCKET_NAME = "batttrack-bucket"
+DOMAIN = "119.59.99.194:9000"
+
 minioClient = Minio(
-    "119.59.102.68:9000",
-    access_key="9Ve1u4iU5FD9hzIK6eIZ",
-    secret_key="havdRCufvaaKVPdIuQcGKSVLoIEGGYpp1E3APumG",
+    DOMAIN,
+    access_key="VPR0NDeYpA4LkklDrhal",
+    secret_key="066PFXCDlVeZs9WBdRPrgYWC1Zn2hg7FkWeKtkXT",
     secure=False,
 )
 
-BUCKET_NAME = "batttrack"
+
 
 if not minioClient.bucket_exists(BUCKET_NAME):
     minioClient.make_bucket(BUCKET_NAME)
@@ -39,7 +42,7 @@ else:
 @router.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
     file_size = os.fstat(file.file.fileno()).st_size
-    ret = minioClient.put_object("batttrack", file.filename, file.file, file_size)
+    ret = minioClient.put_object(f"{BUCKET_NAME}", file.filename, file.file, file_size)
     return {
-        "image_url": "http://119.59.102.68:9000/batttrack/" + ret._object_name
+        "image_url": f"http://{DOMAIN}/{BUCKET_NAME}/" + ret._object_name
     }
