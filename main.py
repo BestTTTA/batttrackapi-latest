@@ -10,7 +10,7 @@ from services.Update_image import update_image
 
 app = FastAPI(
     title="Batttrack",
-    summary="A sample application showing how to use FastAPI to add a ReST API to a MongoDB collection.",
+    summary="",
 )
 
 app.add_middleware(
