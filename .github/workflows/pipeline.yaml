@@ -51,7 +51,7 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Deploy to host
+    - name: Deploy to Host
       run: |
         echo '#!/usr/bin/expect -f
         spawn ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -p 3022 4490@gate.manage.proen.cloud
