@@ -7,12 +7,12 @@ import json
 router = APIRouter(tags=["Project => Upload Image"])
 
 BUCKET_NAME = "batttrack"
-DOMAIN = "119.59.102.68:9000" 
+DOMAIN = "210.246.202.128:9000" 
 
 minioClient = Minio(
     DOMAIN,
-    access_key="0vNObi4a4k1dvAdKFL2S",
-    secret_key="bikyLcX8GJoRxjpcSi31SHuubcAtaId8i1lFRAc7",
+    access_key="zW0Eakj2v322TXiSQaA4",
+    secret_key="zfoPxkoZr2GBbXxr0kzT2Wlx9WqbZwGBlSjFgj7f",
     secure=False,
 )
 
