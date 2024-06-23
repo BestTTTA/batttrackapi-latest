@@ -54,13 +54,21 @@ jobs:
     - name: Deploy to host
       run: |
         echo "
+        #!/usr/bin/expect -f
         spawn ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -p 3022 4490@gate.manage.proen.cloud
-        expect \":\"
-        send \"3\r\"
-        expect \":\"
-        send \"2\r\"
-        expect \"$\"
-        send \"docker pull bestbest/api_batttrack:latest && cd /home/batter-track && docker-compose down && docker-compose up -d\r\"
+        expect {
+          \"Enter [0-3]:\" {
+            send \"3\r\"
+            exp_continue
+          }
+          \"Enter [0-2]:\" {
+            send \"2\r\"
+            exp_continue
+          }
+          \"$\" {
+            send \"docker pull bestbest/api_batttrack:latest && cd /home/batter-track && docker-compose down && docker-compose up -d\r\"
+          }
+        }
         expect eof
         " > deploy_expect.sh
         chmod +x deploy_expect.sh
