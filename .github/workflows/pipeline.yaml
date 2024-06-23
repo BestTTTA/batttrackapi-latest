@@ -50,7 +50,7 @@ jobs:
 
     - name: Deploy to host
       run: |
-        ssh -o StrictHostKeyChecking=no root@210.246.202.128 '
+        ssh -o StrictHostKeyChecking=no 4490@gate.manage.proen.cloud -p 3022 '
           docker pull bestbest/api_batttrack:latest &&
           cd /home/batter-track &&
           docker compose down &&
