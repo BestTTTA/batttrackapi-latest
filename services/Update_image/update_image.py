@@ -3,11 +3,14 @@ from minio import Minio
 from minio.error import S3Error
 import os
 import json
+from dotenv import load_dotenv
 
 router = APIRouter(tags=["Project => Upload Image"])
 
-BUCKET_NAME = "batttrack"
-DOMAIN = "210.246.202.128:9000" 
+BUCKET_NAME = os.getenv("BUCKET_NAME")
+DOMAIN = os.getenv("DOMAIN")
+ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 
 minioClient = Minio(
     DOMAIN,
