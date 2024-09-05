@@ -54,7 +54,14 @@ jobs:
           docker stop batttrackapi || true
           docker rm batttrackapi || true
           docker pull bestbest/batttrack-api:latest
-          docker run -d -p 8080:8080 --name batttrackapi -e MONGO_URL=${{ secrets.MONGO_URL }} bestbest/batttrack-api:latest
+          docker run -d -p 8080:8080 --name batttrackapi \
+            -e MONGO_URL=${{ secrets.MONGO_URL }} \
+            -e MINIO_DOMAIN=${{ secrets.MINIO_DOMAIN }} \
+            -e MINIO_ACCESS_KEY=${{ secrets.MINIO_ACCESS_KEY }} \
+            -e MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY }} \
+            -e BUCKET_NAME=${{ secrets.BUCKET_NAME }} \
+            bestbest/batttrack-api:latest
+
         EOF
       env:
         SERVER_IP: ${{ secrets.SERVER_IP }}
