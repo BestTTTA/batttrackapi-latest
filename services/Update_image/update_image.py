@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 router = APIRouter(tags=["Project => Upload Image"])
 
 BUCKET_NAME = os.getenv("BUCKET_NAME")
-DOMAIN = os.getenv("DOMAIN")
+DOMAIN = os.getenv("MINIO_DOMAIN")
 ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 
