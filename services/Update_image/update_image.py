@@ -5,18 +5,23 @@ import os
 import json
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
+
 router = APIRouter(tags=["Project => Upload Image"])
 
+# Get environment variables
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 DOMAIN = os.getenv("MINIO_DOMAIN")
 ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 
+# Initialize Minio client
 minioClient = Minio(
     DOMAIN,
-    access_key="zW0Eakj2v322TXiSQaA4",
-    secret_key="zfoPxkoZr2GBbXxr0kzT2Wlx9WqbZwGBlSjFgj7f",
-    secure=False,
+    access_key=ACCESS_KEY,
+    secret_key=SECRET_KEY,
+    secure=False  # Change to True if using HTTPS
 )
 
 try:
@@ -43,8 +48,18 @@ except S3Error as e:
 @router.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
     try:
-        file_size = os.fstat(file.file.fileno()).st_size
-        minioClient.put_object(BUCKET_NAME, file.filename, file.file, file_size)
+        # Use file size from FastAPI UploadFile
+        file_size = await file.seek(0, os.SEEK_END)  # Get file size
+        await file.seek(0)  # Reset file pointer to start
+
+        minioClient.put_object(
+            BUCKET_NAME,
+            file.filename,
+            file.file,
+            file_size,
+            content_type=file.content_type  # Set content type
+        )
+        
         return {
             "image_url": f"http://{DOMAIN}/{BUCKET_NAME}/{file.filename}"
         }
